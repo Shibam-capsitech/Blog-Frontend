@@ -4,14 +4,13 @@ import {
     DocumentCardTitle,
     DocumentCardDetails,
     DocumentCardActivity,
+    DocumentCardImage
 } from '@fluentui/react/lib/DocumentCard';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Router, useNavigate, useNavigation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '@fluentui/react';
 import { FaEye } from 'react-icons/fa';
-
-
 
 const ViewPost: React.FunctionComponent = () => {
     const [posts, setPosts] = useState([]);
@@ -43,52 +42,62 @@ const ViewPost: React.FunctionComponent = () => {
         getAllPosts();
     }, []);
 
-    const showLimitedChar =( desc: string)=>{
-        return `${desc.slice(0,280)}...`
-    }
+    const handleClickViewDetails = (id: string) => {
+        navigate(`/view-post/${id}`);
+    };
 
-    const handleClickViewDetails =(id:string)=>{
-        navigate(`/view-post/${id}`)
-    }
     return (
         <div style={{ padding: '24px' }}>
             <h1 style={{ textAlign: 'center' }}>View All Blogs</h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, justifyContent: 'center', flexDirection: "column", width: "100%", alignItems: "center" }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '20px',
+                    justifyContent: 'start',
+                    width: '100%',
+                }}
+            >
                 {posts?.map((postItem: any, index: number) => (
                     <DocumentCard
                         key={postItem._id || index}
                         aria-label="Post Card"
-                        style={{ minWidth: "900px", height: "max" }}
+                        style={{
+                            width: '600px',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
                     >
+                        {postItem.imgUrl && (
+                            <img src={postItem.imgUrl} style={{
+                                width: '100%',
+                                height: '150px',
+                                objectFit: 'cover',
+                            }} alt="" />
+                        )}
                         <DocumentCardDetails>
                             <DocumentCardTitle
                                 title={postItem.title}
                                 shouldTruncate={true}
+                                styles={{ root: { whiteSpace: "wrap", display: "flex", flex: "wrap" } }}
                             />
-                            <p style={{ padding: "0 12px" }}>
-                               {showLimitedChar(postItem.description)}
-                            </p>
-                            {/* <div style={{ padding: "0 12px", fontSize: "13px", color: "#666" }}>
-                                <strong>Author:</strong> {postItem.user?.name}<br />
-                                <strong>Email:</strong> {postItem.user?.email}<br />
-                                <strong>City:</strong> {postItem.user?.city}
-                            </div> */}
                         </DocumentCardDetails>
                         <DocumentCardActivity
                             activity={`Posted on ${new Date(postItem.createdAt).toLocaleDateString()}`}
-                            people={[{ name: postItem.user?.name, profileImageSrc: '', initials: postItem.user?.name?.charAt(0) }]}
+                            people={[
+                                {
+                                    name: postItem.user?.name || 'U',
+                                    profileImageSrc: '',
+                                    initials: postItem.user?.name?.charAt(0) || 'U'
+                                }
+                            ]}
                         />
-                        <div style={{ display: "flex", justifyContent: "end", }}>
-                            
-                            <PrimaryButton
-                            onClick=
-                                {() => handleClickViewDetails(postItem._id)}
-                            
-                            >View Details &nbsp; 
-                            <FaEye/>
+                        <div style={{ padding: '5px', textAlign: 'right' }}>
+                            <PrimaryButton onClick={() => handleClickViewDetails(postItem._id)}>
+                                View&nbsp;<FaEye />
                             </PrimaryButton>
                         </div>
-
                     </DocumentCard>
                 ))}
             </div>
